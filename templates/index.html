@@ -1,0 +1,328 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+
+    <title>Library Management System</title>
+
+    <link rel="stylesheet" href="{{ url_for('static', filename='style.css') }}">
+
+    <style>
+
+        *{
+            margin:0;
+            padding:0;
+            box-sizing:border-box;
+            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+        }
+
+        body{
+            background:
+            radial-gradient(circle at top left, #1e293b 0%, transparent 35%),
+            radial-gradient(circle at bottom right, #0f172a 0%, transparent 30%),
+            linear-gradient(135deg, #020617, #0f172a, #111827);
+
+            min-height:100vh;
+            color:white;
+            overflow-x:hidden;
+        }
+
+        /* NAVBAR */
+
+        .navbar{
+            width:100%;
+            padding:18px 8%;
+            display:flex;
+            justify-content:space-between;
+            align-items:center;
+
+            background:rgba(255,255,255,0.05);
+            backdrop-filter: blur(12px);
+
+            border-bottom:1px solid rgba(255,255,255,0.08);
+
+            position:sticky;
+            top:0;
+            z-index:100;
+        }
+
+        .logo{
+            font-size:28px;
+            font-weight:700;
+            letter-spacing:1px;
+
+            background:linear-gradient(to right,#38bdf8,#818cf8);
+            -webkit-background-clip:text;
+            -webkit-text-fill-color:transparent;
+        }
+
+        .nav-links{
+            display:flex;
+            gap:30px;
+        }
+
+        .nav-links a{
+            text-decoration:none;
+            color:#e2e8f0;
+            font-size:15px;
+            transition:0.3s ease;
+            position:relative;
+        }
+
+        .nav-links a::after{
+            content:'';
+            position:absolute;
+            left:0;
+            bottom:-6px;
+            width:0%;
+            height:2px;
+            background:#38bdf8;
+            transition:0.3s;
+        }
+
+        .nav-links a:hover{
+            color:#38bdf8;
+        }
+
+        .nav-links a:hover::after{
+            width:100%;
+        }
+
+        /* CONTAINER */
+
+        .container{
+            width:90%;
+            max-width:1300px;
+            margin:auto;
+            padding:60px 0;
+        }
+
+        /* HERO */
+
+        .hero{
+            text-align:center;
+            margin-bottom:60px;
+        }
+
+        .hero h1{
+            font-size:58px;
+            line-height:1.2;
+            margin-bottom:20px;
+
+            background:linear-gradient(to right,#ffffff,#93c5fd);
+            -webkit-background-clip:text;
+            -webkit-text-fill-color:transparent;
+        }
+
+        .hero p{
+            color:#94a3b8;
+            font-size:18px;
+        }
+
+        /* CARDS */
+
+        .card-grid{
+            display:grid;
+            grid-template-columns:repeat(auto-fit,minmax(260px,1fr));
+            gap:28px;
+        }
+
+        .card{
+            background:rgba(255,255,255,0.06);
+            border:1px solid rgba(255,255,255,0.08);
+
+            padding:32px;
+            border-radius:24px;
+
+            backdrop-filter: blur(15px);
+
+            transition:0.35s ease;
+
+            position:relative;
+            overflow:hidden;
+        }
+
+        .card::before{
+            content:'';
+            position:absolute;
+            width:180px;
+            height:180px;
+            background:rgba(56,189,248,0.12);
+            border-radius:50%;
+
+            top:-80px;
+            right:-80px;
+        }
+
+        .card:hover{
+            transform:translateY(-10px) scale(1.02);
+            border-color:rgba(56,189,248,0.4);
+
+            box-shadow:
+            0 20px 40px rgba(0,0,0,0.4),
+            0 0 25px rgba(56,189,248,0.15);
+        }
+
+        .card h2{
+            font-size:26px;
+            margin-bottom:18px;
+            color:#f8fafc;
+            position:relative;
+            z-index:2;
+        }
+
+        .card p{
+            color:#cbd5e1;
+            line-height:1.7;
+            font-size:15px;
+            margin-bottom:28px;
+            position:relative;
+            z-index:2;
+        }
+
+        /* BUTTON */
+
+        .btn{
+            display:inline-block;
+            padding:13px 28px;
+
+            background:linear-gradient(to right,#0ea5e9,#6366f1);
+
+            color:white;
+            text-decoration:none;
+            font-weight:600;
+
+            border-radius:12px;
+
+            transition:0.3s ease;
+
+            position:relative;
+            z-index:2;
+        }
+
+        .btn:hover{
+            transform:scale(1.05);
+
+            box-shadow:
+            0 10px 20px rgba(14,165,233,0.3);
+        }
+
+        /* FOOTER */
+
+        .footer{
+            text-align:center;
+            padding:25px;
+
+            color:#94a3b8;
+            font-size:14px;
+
+            border-top:1px solid rgba(255,255,255,0.08);
+
+            background:rgba(255,255,255,0.03);
+            margin-top:40px;
+        }
+
+        /* RESPONSIVE */
+
+        @media(max-width:900px){
+
+            .navbar{
+                flex-direction:column;
+                gap:18px;
+            }
+
+            .nav-links{
+                flex-wrap:wrap;
+                justify-content:center;
+                gap:18px;
+            }
+
+            .hero h1{
+                font-size:40px;
+            }
+
+        }
+
+        @media(max-width:500px){
+
+            .hero h1{
+                font-size:32px;
+            }
+
+            .card{
+                padding:24px;
+            }
+
+        }
+
+    </style>
+
+</head>
+
+<body>
+
+    <div class="navbar">
+
+        <div class="logo">LibraryMS</div>
+
+        <div class="nav-links">
+            <a href="/">Home</a>
+            <a href="/add_book">Add Book</a>
+            <a href="/add_member">Members</a>
+            <a href="/issue_book">Issue</a>
+            <a href="/return_book">Return</a>
+            <a href="/view_fines">Fines</a>
+        </div>
+
+    </div>
+
+    <div class="container">
+
+        <div class="hero">
+            <h1>Smart Library Management System</h1>
+            <p>Modern • Fast • Organized • Efficient</p>
+        </div>
+
+        <div class="card-grid">
+
+            <div class="card">
+                <h2>Add Book</h2>
+                <p>Add books with author, stock, and category information into the library database.</p>
+                <a href="/add_book" class="btn">Open</a>
+            </div>
+
+            <div class="card">
+                <h2>Add Member</h2>
+                <p>Register students and library members with secure record management.</p>
+                <a href="/add_member" class="btn">Open</a>
+            </div>
+
+            <div class="card">
+                <h2>Issue Book</h2>
+                <p>Issue books instantly and automatically update the availability status.</p>
+                <a href="/issue_book" class="btn">Open</a>
+            </div>
+
+            <div class="card">
+                <h2>Return Book</h2>
+                <p>Manage book returns, due dates, and fine calculations efficiently.</p>
+                <a href="/return_book" class="btn">Open</a>
+            </div>
+
+            <div class="card">
+                <h2>View Fines</h2>
+                <p>Track pending fines, payment status, and overdue book details.</p>
+                <a href="/view_fines" class="btn">Open</a>
+            </div>
+
+        </div>
+
+    </div>
+
+    <div class="footer">
+        DBMS Mini Project • 2026
+    </div>
+
+</body>
+</html>

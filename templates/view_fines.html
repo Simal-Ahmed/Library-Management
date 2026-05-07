@@ -1,0 +1,219 @@
+<!DOCTYPE html>
+<html>
+<head>
+    <title>View Fines</title>
+    <link rel="stylesheet" href="{{ url_for('static', filename='style.css') }}">
+
+    <style>
+
+        table {
+            width: 100%;
+            border-collapse: collapse;
+            background: #1e293b;
+            border-radius: 12px;
+            overflow: hidden;
+            margin-top: 30px;
+        }
+
+        th {
+            background: #334155;
+            padding: 16px;
+            color: white;
+        }
+
+        td {
+            padding: 16px;
+            text-align: center;
+            border-bottom: 1px solid #475569;
+            color: white;
+        }
+
+        .pay-btn {
+            background: #22c55e;
+            color: white;
+            border: none;
+            padding: 10px 16px;
+            border-radius: 8px;
+            cursor: pointer;
+            font-weight: bold;
+            transition: 0.3s;
+        }
+
+        .pay-btn:hover {
+            background: #16a34a;
+        }
+
+        .paid {
+            color: #22c55e;
+            font-weight: bold;
+        }
+
+        .modal {
+            position: fixed;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            background: rgba(0,0,0,0.7);
+            display: none;
+            justify-content: center;
+            align-items: center;
+        }
+
+        .modal-box {
+            background: #1e293b;
+            padding: 40px;
+            border-radius: 16px;
+            text-align: center;
+            width: 320px;
+            color: white;
+        }
+
+        .loader {
+            width: 50px;
+            height: 50px;
+            border: 5px solid #334155;
+            border-top: 5px solid #38bdf8;
+            border-radius: 50%;
+            margin: 20px auto;
+            animation: spin 1s linear infinite;
+        }
+
+        @keyframes spin {
+            100% {
+                transform: rotate(360deg);
+            }
+        }
+
+    </style>
+</head>
+
+<body>
+
+    <div class="navbar">
+
+        <div class="logo">LibraryMS</div>
+
+        <div class="nav-links">
+            <a href="/">Home</a>
+        </div>
+
+    </div>
+
+    <div class="container">
+
+        <div class="hero">
+            <h1>Fine Records</h1>
+            <p>View and manage pending fines</p>
+        </div>
+
+        <table>
+
+            <tr>
+                <th>Fine ID</th>
+                <th>Issue ID</th>
+                <th>Amount</th>
+                <th>Status</th>
+                <th>Action</th>
+            </tr>
+
+            {% for fine in fines %}
+
+            <tr>
+
+                <td>{{ fine[0] }}</td>
+
+                <td>{{ fine[1] }}</td>
+
+                <td>₹{{ fine[2] }}</td>
+
+                <td id="status-{{ fine[0] }}">
+
+                    {% if fine[3] == 'paid' %}
+
+                        <span class="paid">Paid</span>
+
+                    {% else %}
+
+                        Unpaid
+
+                    {% endif %}
+
+                </td>
+
+                <td>
+
+                    {% if fine[3] != 'paid' %}
+
+                        <button class="pay-btn"
+                                onclick="payFine({{ fine[0] }})">
+                            Pay Now
+                        </button>
+
+                    {% else %}
+
+                        <span class="paid">Completed</span>
+
+                    {% endif %}
+
+                </td>
+
+            </tr>
+
+            {% endfor %}
+
+        </table>
+
+    </div>
+
+    <div class="modal" id="paymentModal">
+
+        <div class="modal-box">
+
+            <h2>Processing Payment</h2>
+
+            <div class="loader"></div>
+
+            <p id="paymentText">Completing your transaction...</p>
+
+        </div>
+
+    </div>
+
+<script>
+
+function payFine(fineId) {
+
+    const modal = document.getElementById('paymentModal');
+    const paymentText = document.getElementById('paymentText');
+
+    modal.style.display = 'flex';
+
+    setTimeout(() => {
+
+        fetch(`/pay_fine/${fineId}`, {
+            method: 'POST'
+        })
+
+        .then(response => response.json())
+
+        .then(data => {
+
+            paymentText.innerHTML = 'Payment Successful!';
+
+            document.getElementById(`status-${fineId}`).innerHTML =
+                '<span class="paid">Paid</span>';
+
+            setTimeout(() => {
+                location.reload();
+            }, 1500);
+
+        });
+
+    }, 2500);
+}
+
+</script>
+
+</body>
+</html>
