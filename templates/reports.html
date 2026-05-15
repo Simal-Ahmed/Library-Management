@@ -1,0 +1,268 @@
+<!DOCTYPE html>
+<html>
+
+<head>
+    <title>Library Report</title>
+    <link rel="stylesheet" href="{{ url_for('static', filename='style.css') }}">
+</head>
+
+<body>
+
+    {% include 'navbar.html' %}
+
+    <main class="container report-container">
+
+        <section class="report-document">
+
+            <div class="report-topbar">
+                <div>
+                    <p class="eyebrow">Official Library Report</p>
+                    <h1>End-of-Day Library Activity Report</h1>
+                    <p>
+                        Complete summary of book inventory, borrow activity, return status, overdue records, and fine collection.
+                    </p>
+                </div>
+
+                <a href="/generate_report_pdf" class="btn print-btn no-print">
+    Generate PDF Report
+</a>
+            </div>
+
+            <div class="report-meta-grid">
+
+                <div class="report-meta-card">
+                    <span>Library Name</span>
+                    <strong>Library Management System</strong>
+                </div>
+
+                <div class="report-meta-card">
+                    <span>Report Type</span>
+                    <strong>Daily Activity Report</strong>
+                </div>
+
+                <div class="report-meta-card">
+                    <span>Loan Period</span>
+                    <strong>{{ loan_days }} Days</strong>
+                </div>
+
+                <div class="report-meta-card">
+                    <span>Generated On</span>
+                    <strong>{{ generated_on }}</strong>
+                </div>
+
+            </div>
+
+            <section class="report-block">
+                <div class="report-block-head">
+                    <h2>1. Summary Overview</h2>
+                    <p>Main operational statistics for the library.</p>
+                </div>
+
+                <div class="summary-grid report-summary">
+
+                    <div class="summary-card">
+                        <span class="stat-label">Inventory</span>
+                        <h3>Total Books</h3>
+                        <p>{{ total_books }}</p>
+                    </div>
+
+                    <div class="summary-card">
+                        <span class="stat-label">Users</span>
+                        <h3>Total Members</h3>
+                        <p>{{ total_members }}</p>
+                    </div>
+
+                    <div class="summary-card">
+                        <span class="stat-label">Active</span>
+                        <h3>Currently Issued</h3>
+                        <p>{{ currently_issued }}</p>
+                    </div>
+
+                    <div class="summary-card">
+                        <span class="stat-label">Completed</span>
+                        <h3>Returned Books</h3>
+                        <p>{{ returned_books }}</p>
+                    </div>
+
+                    <div class="summary-card danger-summary">
+                        <span class="stat-label">Attention</span>
+                        <h3>Overdue Books</h3>
+                        <p>{{ overdue_books }}</p>
+                    </div>
+
+                    <div class="summary-card success-summary">
+                        <span class="stat-label">Collected</span>
+                        <h3>Fine Collected</h3>
+                        <p>₹{{ fine_collected }}</p>
+                    </div>
+
+                    <div class="summary-card warning-summary">
+                        <span class="stat-label">Pending</span>
+                        <h3>Fine Due</h3>
+                        <p>₹{{ fine_due }}</p>
+                    </div>
+
+                </div>
+            </section>
+
+            <section class="report-block">
+                <div class="report-block-head">
+                    <h2>2. Transaction Details</h2>
+                    <p>Detailed record of issued books, returned books, fines, and overdue status.</p>
+                </div>
+
+                {% if report_data|length == 0 %}
+
+                    <section class="empty-box">
+                        <h2>No Report Data Found</h2>
+                        <p>
+                            Issue and return records will appear here once library transactions are created.
+                        </p>
+                    </section>
+
+                {% else %}
+
+                    <div class="toolbar no-print">
+                        <div>
+                            <h2>Search Report</h2>
+                            <p>Filter by member, book, date, status, fine, or overdue status.</p>
+                        </div>
+
+                        <div class="toolbar-actions">
+                            <input
+                                type="text"
+                                id="searchInput"
+                                placeholder="Search report..."
+                                oninput="filterTable()"
+                            >
+                        </div>
+                    </div>
+
+                    <div class="table-box report-table-box">
+
+                        <table id="dataTable">
+                            <thead>
+                                <tr>
+                                    <th>Issue ID</th>
+                                    <th>Member</th>
+                                    <th>Book</th>
+                                    <th>Issue Date</th>
+                                    <th>Expected Return</th>
+                                    <th>Return Date</th>
+                                    <th>Status</th>
+                                    <th>Fine Amount</th>
+                                    <th>Fine Status</th>
+                                    <th>Overdue</th>
+                                </tr>
+                            </thead>
+
+                            <tbody>
+                                {% for row in report_data %}
+
+                                <tr class="{% if row[9] == 'overdue' %}overdue-row{% endif %}">
+                                    <td>#{{ row[0] }}</td>
+                                    <td class="strong-cell">{{ row[1] }}</td>
+                                    <td>{{ row[2] }}</td>
+                                    <td>{{ row[3] }}</td>
+                                    <td>{{ row[4] }}</td>
+
+                                    <td>
+                                        {% if row[5] %}
+                                            {{ row[5] }}
+                                        {% else %}
+                                            <span class="muted-text">Not Returned</span>
+                                        {% endif %}
+                                    </td>
+
+                                    <td>
+                                        {% if row[6] == 'issued' %}
+                                            <span class="status-pill info-pill">Issued</span>
+                                        {% else %}
+                                            <span class="status-pill success-pill">Returned</span>
+                                        {% endif %}
+                                    </td>
+
+                                    <td class="amount-cell">₹{{ row[7] }}</td>
+
+                                    <td>
+                                        {% if row[8] == 'paid' %}
+                                            <span class="status-pill success-pill">Paid</span>
+                                        {% elif row[8] == 'unpaid' %}
+                                            <span class="status-pill danger-pill">Unpaid</span>
+                                        {% else %}
+                                            <span class="muted-text">No Fine</span>
+                                        {% endif %}
+                                    </td>
+
+                                    <td>
+                                        {% if row[9] == 'overdue' %}
+                                            <span class="status-pill danger-pill">Overdue</span>
+                                        {% else %}
+                                            <span class="muted-text">—</span>
+                                        {% endif %}
+                                    </td>
+                                </tr>
+
+                                {% endfor %}
+                            </tbody>
+                        </table>
+
+                    </div>
+
+                {% endif %}
+            </section>
+
+            <section class="report-block report-notes">
+                <div>
+                    <h2>3. Report Notes</h2>
+                    <ul>
+                        <li>This report is generated from the library database records.</li>
+                        <li>Fine is calculated only for late returns after the allowed loan period.</li>
+                        <li>Currently issued books without return date are treated as active borrow records.</li>
+                        <li>Overdue status is based on expected return date and current date.</li>
+                    </ul>
+                </div>
+            </section>
+
+            <!-- <section class="signature-area">
+                <div>
+                    <p>Prepared By</p> -->
+                    <!-- <strong>Library Management System</strong>
+                </div>
+
+                <div>
+                    <p>Librarian Signature</p>
+                    <span></span>
+                </div>
+
+                <div>
+                    <p>Verified By</p>
+                    <span></span>
+                </div>
+            </section> -->
+
+        </section>
+
+    </main>
+
+    <script>
+        function filterTable() {
+            let input = document.getElementById("searchInput").value.toLowerCase();
+            let table = document.getElementById("dataTable");
+            let rows = table.getElementsByTagName("tr");
+
+            for (let i = 1; i < rows.length; i++) {
+                let rowText = rows[i].innerText.toLowerCase();
+
+                if (rowText.includes(input)) {
+                    rows[i].style.display = "";
+                } else {
+                    rows[i].style.display = "none";
+                }
+            }
+        }
+    </script>
+
+</body>
+
+</html>

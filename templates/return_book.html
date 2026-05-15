@@ -1,5 +1,6 @@
 <!DOCTYPE html>
 <html>
+
 <head>
     <title>Return Book</title>
     <link rel="stylesheet" href="{{ url_for('static', filename='style.css') }}">
@@ -7,32 +8,89 @@
 
 <body>
 
-    <div class="navbar">
-        <div class="logo">LibraryMS</div>
+    {% include 'navbar.html' %}
 
-        <div class="nav-links">
-            <a href="/">Home</a>
-            <a href="/add_book">Add Book</a>
-            <a href="/add_member">Members</a>
-            <a href="/issue_book">Issue</a>
-        </div>
-    </div>
+    <main class="container">
 
-    <div class="form-box">
+        <section class="hero">
+            <p class="eyebrow">Return Operation</p>
+            <h1>Return Book</h1>
+            <p>
+                Select an active issued record and return the book. The system will update book quantity and calculate fine if the return is late.
+            </p>
+        </section>
 
-        <h1>Return Book</h1>
+        {% if message %}
+            <section class="message {{ message_type }}">
+                {{ message }}
+            </section>
+        {% endif %}
 
-        <form method="POST">
+        {% if issued_records|length == 0 %}
 
-            <input type="number" name="issue_id" placeholder="Enter Issue ID" required>
+            <section class="empty-box">
+                <h2>No Issued Books Found</h2>
+                <p>
+                    There are currently no active issued books to return.
+                </p>
+                <a href="/issue_book" class="btn empty-action">Issue a Book</a>
+            </section>
 
-            <input type="date" name="return_date" required>
+        {% else %}
 
-            <button class="btn" type="submit">Return Book</button>
+            <section class="form-layout">
 
-        </form>
+                <div class="form-card">
 
-    </div>
+                    <div class="form-heading">
+                        <h2>Return Details</h2>
+                        <p>Choose the issued record and enter the actual return date.</p>
+                    </div>
+
+                    <form method="POST">
+
+                        <label>Select Issued Book</label>
+
+                        <select name="issue_id" required>
+                            <option value="">Choose issued record</option>
+
+                            {% for record in issued_records %}
+                                <option value="{{ record[0] }}">
+                                    Issue #{{ record[0] }} — {{ record[1] }} borrowed "{{ record[2] }}" on {{ record[3] }}
+                                </option>
+                            {% endfor %}
+                        </select>
+
+                        <p class="field-hint">
+                            Only currently issued books are shown here.
+                        </p>
+
+                        <label>Return Date</label>
+                        <input type="date" name="return_date" required>
+
+                        <button type="submit" class="btn full-btn">Return Book</button>
+
+                    </form>
+
+                </div>
+
+                <aside class="info-card">
+                    <h3>Return Rules</h3>
+
+                    <ul>
+                        <li>Book status changes from issued to returned.</li>
+                        <li>Available quantity increases by 1 after return.</li>
+                        <li>First 7 days are fine-free.</li>
+                        <li>After 7 days, fine is calculated at ₹10 per extra day.</li>
+                    </ul>
+                </aside>
+
+            </section>
+
+        {% endif %}
+
+    </main>
 
 </body>
+
 </html>

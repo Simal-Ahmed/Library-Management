@@ -1,5 +1,6 @@
 <!DOCTYPE html>
 <html>
+
 <head>
     <title>Issue Book</title>
     <link rel="stylesheet" href="{{ url_for('static', filename='style.css') }}">
@@ -7,34 +8,85 @@
 
 <body>
 
-    <div class="navbar">
-        <div class="logo">LibraryMS</div>
+    {% include 'navbar.html' %}
 
-        <div class="nav-links">
-            <a href="/">Home</a>
-            <a href="/add_book">Add Book</a>
-            <a href="/add_member">Members</a>
-            <a href="/return_book">Return</a>
-        </div>
-    </div>
+    <main class="container">
 
-    <div class="form-box">
+        <section class="hero">
+            <p class="eyebrow">Borrow Operation</p>
+            <h1>Issue Book</h1>
+            <p>
+                Select an available book and assign it to a registered member. The available quantity will reduce automatically after issuing.
+            </p>
+        </section>
 
-        <h1>Issue Book</h1>
+        {% if message %}
+            <section class="message {{ message_type }}">
+                {{ message }}
+            </section>
+        {% endif %}
 
-        <form method="POST">
+        <section class="form-layout">
 
-            <input type="number" name="book_id" placeholder="Enter Book ID" required>
+            <div class="form-card">
 
-            <input type="number" name="member_id" placeholder="Enter Member ID" required>
+                <div class="form-heading">
+                    <h2>Issue Details</h2>
+                    <p>Fill the details below to create a new borrow record.</p>
+                </div>
 
-            <input type="date" name="issue_date" required>
+                <form method="POST">
 
-            <button class="btn" type="submit">Issue Book</button>
+                    <label>Select Book</label>
+                    <select name="book_id" required>
+                        <option value="">Choose a book</option>
 
-        </form>
+                        {% for book in books %}
+                            <option value="{{ book[0] }}">
+                                {{ book[1] }} — Available: {{ book[2] }}
+                            </option>
+                        {% endfor %}
+                    </select>
 
-    </div>
+                    <p class="field-hint">
+                        If the selected book has 0 quantity, the system will show the expected available date.
+                    </p>
+
+                    <label>Select Member</label>
+                    <select name="member_id" required>
+                        <option value="">Choose a member</option>
+
+                        {% for member in members %}
+                            <option value="{{ member[0] }}">
+                                {{ member[1] }}
+                            </option>
+                        {% endfor %}
+                    </select>
+
+                    <label>Issue Date</label>
+                    <input type="date" name="issue_date" required>
+
+                    <button type="submit" class="btn full-btn">Issue Book</button>
+
+                </form>
+
+            </div>
+
+            <aside class="info-card">
+                <h3>Issue Rules</h3>
+
+                <ul>
+                    <li>Book quantity must be greater than 0.</li>
+                    <li>After issue, available quantity decreases by 1.</li>
+                    <li>The normal loan period is 7 days.</li>
+                    <li>If no copy is available, the system shows an expected availability date.</li>
+                </ul>
+            </aside>
+
+        </section>
+
+    </main>
 
 </body>
+
 </html>

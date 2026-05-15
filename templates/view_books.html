@@ -1,0 +1,117 @@
+<!DOCTYPE html>
+<html>
+
+<head>
+    <title>View Books</title>
+    <link rel="stylesheet" href="{{ url_for('static', filename='style.css') }}">
+</head>
+
+<body>
+
+    {% include 'navbar.html' %}
+
+    <main class="container">
+
+        <section class="hero">
+            <p class="eyebrow">Book Inventory</p>
+            <h1>Library Books</h1>
+            <p>
+                View all books with their author, category, available quantity, and current availability status.
+            </p>
+        </section>
+
+        {% if books|length == 0 %}
+
+            <section class="empty-box">
+                <h2>No Books Found</h2>
+                <p>
+                    No book records are available yet. Add books first to view them in this inventory page.
+                </p>
+                <a href="/add_book" class="btn empty-action">Add First Book</a>
+            </section>
+
+        {% else %}
+
+            <section class="toolbar">
+                <div>
+                    <h2>Book Records</h2>
+                    <p>Search and check available copies in the library.</p>
+                </div>
+
+                <div class="toolbar-actions">
+                    <input
+                        type="text"
+                        id="searchInput"
+                        placeholder="Search by title, author, category..."
+                        oninput="filterTable()"
+                    >
+                    <a href="/add_book" class="btn">Add Book</a>
+                </div>
+            </section>
+
+            <section class="table-box">
+
+                <table id="dataTable">
+                    <thead>
+                        <tr>
+                            <th>Book ID</th>
+                            <th>Title</th>
+                            <th>Author</th>
+                            <th>Category</th>
+                            <th>Available Qty</th>
+                            <th>Status</th>
+                        </tr>
+                    </thead>
+
+                    <tbody>
+                        {% for book in books %}
+
+                        <tr>
+                            <td>#{{ book[0] }}</td>
+                            <td class="strong-cell">{{ book[1] }}</td>
+                            <td>{{ book[2] }}</td>
+                            <td>
+                                <span class="soft-badge">{{ book[3] }}</span>
+                            </td>
+                            <td>{{ book[4] }}</td>
+
+                            <td>
+                                {% if book[4] > 0 %}
+                                    <span class="status-pill success-pill">Available</span>
+                                {% else %}
+                                    <span class="status-pill danger-pill">Not Available</span>
+                                {% endif %}
+                            </td>
+                        </tr>
+
+                        {% endfor %}
+                    </tbody>
+                </table>
+
+            </section>
+
+        {% endif %}
+
+    </main>
+
+    <script>
+        function filterTable() {
+            let input = document.getElementById("searchInput").value.toLowerCase();
+            let table = document.getElementById("dataTable");
+            let rows = table.getElementsByTagName("tr");
+
+            for (let i = 1; i < rows.length; i++) {
+                let rowText = rows[i].innerText.toLowerCase();
+
+                if (rowText.includes(input)) {
+                    rows[i].style.display = "";
+                } else {
+                    rows[i].style.display = "none";
+                }
+            }
+        }
+    </script>
+
+</body>
+
+</html>

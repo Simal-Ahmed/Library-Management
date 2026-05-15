@@ -1,5 +1,6 @@
 <!DOCTYPE html>
 <html>
+
 <head>
     <title>Add Book</title>
     <link rel="stylesheet" href="{{ url_for('static', filename='style.css') }}">
@@ -7,36 +8,104 @@
 
 <body>
 
-    <div class="navbar">
-        <div class="logo">LibraryMS</div>
+    {% include 'navbar.html' %}
 
-        <div class="nav-links">
-            <a href="/">Home</a>
-            <a href="/add_member">Members</a>
-            <a href="/issue_book">Issue</a>
-            <a href="/return_book">Return</a>
-        </div>
-    </div>
+    <main class="container">
 
-    <div class="form-box">
+        <section class="hero">
+            <p class="eyebrow">Inventory Setup</p>
+            <h1>Add Book</h1>
+            <p>
+                Add a new book record with its author, category, and available quantity.
+            </p>
+        </section>
 
-        <h1>Add Book</h1>
+        {% if message %}
+            <section class="message {{ message_type }}">
+                {{ message }}
+            </section>
+        {% endif %}
 
-        <form method="POST">
+        <section class="form-layout">
 
-            <input type="text" name="title" placeholder="Enter Book Title" required>
+            <div class="form-card">
 
-            <input type="number" name="author_id" placeholder="Enter Author ID" required>
+                <div class="form-heading">
+                    <h2>Book Details</h2>
+                    <p>Enter the book information below to add it to the library inventory.</p>
+                </div>
 
-            <input type="number" name="category_id" placeholder="Enter Category ID" required>
+                <form method="POST">
 
-            <input type="number" name="quantity" placeholder="Enter Quantity" required>
+                    <label>Book Title</label>
+                    <input
+                        type="text"
+                        name="title"
+                        placeholder="Example: Database System Concepts"
+                        required
+                    >
 
-            <button class="btn" type="submit">Add Book</button>
+                    <label>Select Author</label>
+                    <select name="author_id" required>
+                        <option value="">Choose author</option>
 
-        </form>
+                        {% for author in authors %}
+                            <option value="{{ author[0] }}">{{ author[1] }}</option>
+                        {% endfor %}
+                    </select>
 
-    </div>
+                    <p class="field-hint">
+                        If the author is not listed, add the author first from the Add Author page.
+                    </p>
+
+                    <label>Select Category</label>
+                    <select name="category_id" required>
+                        <option value="">Choose category</option>
+
+                        {% for category in categories %}
+                            <option value="{{ category[0] }}">{{ category[1] }}</option>
+                        {% endfor %}
+                    </select>
+
+                    <p class="field-hint">
+                        Categories help organize books and make reports easier to understand.
+                    </p>
+
+                    <label>Quantity</label>
+                    <input
+                        type="number"
+                        name="quantity"
+                        min="0"
+                        placeholder="Example: 5"
+                        required
+                    >
+
+                    <button type="submit" class="btn full-btn">Add Book</button>
+
+                </form>
+
+            </div>
+
+            <aside class="info-card">
+                <h3>Book Entry Notes</h3>
+
+                <ul>
+                    <li>Each book must be linked with one author.</li>
+                    <li>Each book must belong to one category.</li>
+                    <li>Quantity means the number of available copies.</li>
+                    <li>When a book is issued, quantity decreases automatically.</li>
+                </ul>
+
+                <div class="side-actions">
+                    <a href="/add_author" class="side-link">Add Author</a>
+                    <a href="/add_category" class="side-link">Add Category</a>
+                </div>
+            </aside>
+
+        </section>
+
+    </main>
 
 </body>
+
 </html>

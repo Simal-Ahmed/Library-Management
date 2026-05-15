@@ -1,219 +1,171 @@
 <!DOCTYPE html>
 <html>
+
 <head>
     <title>View Fines</title>
     <link rel="stylesheet" href="{{ url_for('static', filename='style.css') }}">
-
-    <style>
-
-        table {
-            width: 100%;
-            border-collapse: collapse;
-            background: #1e293b;
-            border-radius: 12px;
-            overflow: hidden;
-            margin-top: 30px;
-        }
-
-        th {
-            background: #334155;
-            padding: 16px;
-            color: white;
-        }
-
-        td {
-            padding: 16px;
-            text-align: center;
-            border-bottom: 1px solid #475569;
-            color: white;
-        }
-
-        .pay-btn {
-            background: #22c55e;
-            color: white;
-            border: none;
-            padding: 10px 16px;
-            border-radius: 8px;
-            cursor: pointer;
-            font-weight: bold;
-            transition: 0.3s;
-        }
-
-        .pay-btn:hover {
-            background: #16a34a;
-        }
-
-        .paid {
-            color: #22c55e;
-            font-weight: bold;
-        }
-
-        .modal {
-            position: fixed;
-            top: 0;
-            left: 0;
-            width: 100%;
-            height: 100%;
-            background: rgba(0,0,0,0.7);
-            display: none;
-            justify-content: center;
-            align-items: center;
-        }
-
-        .modal-box {
-            background: #1e293b;
-            padding: 40px;
-            border-radius: 16px;
-            text-align: center;
-            width: 320px;
-            color: white;
-        }
-
-        .loader {
-            width: 50px;
-            height: 50px;
-            border: 5px solid #334155;
-            border-top: 5px solid #38bdf8;
-            border-radius: 50%;
-            margin: 20px auto;
-            animation: spin 1s linear infinite;
-        }
-
-        @keyframes spin {
-            100% {
-                transform: rotate(360deg);
-            }
-        }
-
-    </style>
 </head>
 
 <body>
 
-    <div class="navbar">
+    {% include 'navbar.html' %}
 
-        <div class="logo">LibraryMS</div>
+    <main class="container">
 
-        <div class="nav-links">
-            <a href="/">Home</a>
-        </div>
-
-    </div>
-
-    <div class="container">
-
-        <div class="hero">
+        <section class="hero">
+            <p class="eyebrow">Fine Management</p>
             <h1>Fine Records</h1>
-            <p>View and manage pending fines</p>
-        </div>
+            <p>
+                View late return fines with member name, book title, amount, payment status, and payment action.
+            </p>
+        </section>
 
-        <table>
+        <section class="note-box">
+            Fine is generated only when a book is returned after the allowed loan period.
+        </section>
 
-            <tr>
-                <th>Fine ID</th>
-                <th>Issue ID</th>
-                <th>Amount</th>
-                <th>Status</th>
-                <th>Action</th>
-            </tr>
+        {% if fines|length == 0 %}
 
-            {% for fine in fines %}
+            <section class="empty-box">
+                <h2>No Fines Found</h2>
+                <p>
+                    Fine records will appear here when books are returned after the allowed loan period.
+                </p>
+                <a href="/return_book" class="btn empty-action">Return Book</a>
+            </section>
 
-            <tr>
+        {% else %}
 
-                <td>{{ fine[0] }}</td>
+            <section class="toolbar">
+                <div>
+                    <h2>Payment Records</h2>
+                    <p>Search fines by member name, book title, amount, or payment status.</p>
+                </div>
 
-                <td>{{ fine[1] }}</td>
+                <div class="toolbar-actions">
+                    <input
+                        type="text"
+                        id="searchInput"
+                        placeholder="Search fines..."
+                        oninput="filterTable()"
+                    >
+                    <a href="/reports" class="btn">View Report</a>
+                </div>
+            </section>
 
-                <td>₹{{ fine[2] }}</td>
+            <section class="table-box">
 
-                <td id="status-{{ fine[0] }}">
+                <table id="dataTable">
+                    <thead>
+                        <tr>
+                            <th>Fine ID</th>
+                            <th>Issue ID</th>
+                            <th>Member</th>
+                            <th>Book</th>
+                            <th>Amount</th>
+                            <th>Status</th>
+                            <th>Action</th>
+                        </tr>
+                    </thead>
 
-                    {% if fine[3] == 'paid' %}
+                    <tbody>
+                        {% for fine in fines %}
 
-                        <span class="paid">Paid</span>
+                        <tr>
+                            <td>#{{ fine[0] }}</td>
+                            <td>#{{ fine[1] }}</td>
+                            <td class="strong-cell">{{ fine[2] }}</td>
+                            <td>{{ fine[3] }}</td>
+                            <td class="amount-cell">₹{{ fine[4] }}</td>
 
-                    {% else %}
+                            <td>
+                                {% if fine[5] == 'paid' %}
+                                    <span class="status-pill success-pill">Paid</span>
+                                {% else %}
+                                    <span class="status-pill danger-pill">Unpaid</span>
+                                {% endif %}
+                            </td>
 
-                        Unpaid
+                            <td>
+                                {% if fine[5] == 'unpaid' %}
+                                    <button class="pay-btn" onclick="payFine('{{ fine[0] }}', this)">
+                                        Pay Now
+                                    </button>
+                                {% else %}
+                                    <span class="status-pill success-pill">Completed</span>
+                                {% endif %}
+                            </td>
+                        </tr>
 
-                    {% endif %}
+                        {% endfor %}
+                    </tbody>
+                </table>
 
-                </td>
+            </section>
 
-                <td>
+        {% endif %}
 
-                    {% if fine[3] != 'paid' %}
+    </main>
 
-                        <button class="pay-btn"
-                                onclick="payFine({{ fine[0] }})">
-                            Pay Now
-                        </button>
+    <script>
+        function filterTable() {
+            let input = document.getElementById("searchInput").value.toLowerCase();
+            let table = document.getElementById("dataTable");
+            let rows = table.getElementsByTagName("tr");
 
-                    {% else %}
+            for (let i = 1; i < rows.length; i++) {
+                let rowText = rows[i].innerText.toLowerCase();
 
-                        <span class="paid">Completed</span>
+                if (rowText.includes(input)) {
+                    rows[i].style.display = "";
+                } else {
+                    rows[i].style.display = "none";
+                }
+            }
+        }
 
-                    {% endif %}
+        function payFine(fineId, button) {
+            let confirmPayment = confirm("Confirm fine payment?");
 
-                </td>
+            if (!confirmPayment) {
+                return;
+            }
 
-            </tr>
-
-            {% endfor %}
-
-        </table>
-
-    </div>
-
-    <div class="modal" id="paymentModal">
-
-        <div class="modal-box">
-
-            <h2>Processing Payment</h2>
-
-            <div class="loader"></div>
-
-            <p id="paymentText">Completing your transaction...</p>
-
-        </div>
-
-    </div>
-
-<script>
-
-function payFine(fineId) {
-
-    const modal = document.getElementById('paymentModal');
-    const paymentText = document.getElementById('paymentText');
-
-    modal.style.display = 'flex';
-
-    setTimeout(() => {
-
-        fetch(`/pay_fine/${fineId}`, {
-            method: 'POST'
-        })
-
-        .then(response => response.json())
-
-        .then(data => {
-
-            paymentText.innerHTML = 'Payment Successful!';
-
-            document.getElementById(`status-${fineId}`).innerHTML =
-                '<span class="paid">Paid</span>';
+            button.disabled = true;
+            button.classList.add("loading-btn");
+            button.innerHTML = '<span class="spinner"></span> Completing transaction...';
 
             setTimeout(() => {
-                location.reload();
-            }, 1500);
 
-        });
+                fetch(`/pay_fine/${fineId}`, {
+                    method: "POST"
+                })
+                .then(response => response.json())
+                .then(data => {
+                    if (data.success) {
+                        button.innerHTML = "Payment Completed";
 
-    }, 2500);
-}
+                        setTimeout(() => {
+                            window.location.href = "/view_fines";
+                        }, 1200);
+                    } else {
+                        alert("Payment failed. Please try again.");
+                        button.disabled = false;
+                        button.classList.remove("loading-btn");
+                        button.innerHTML = "Pay Now";
+                    }
+                })
+                .catch(error => {
+                    alert("Something went wrong.");
+                    button.disabled = false;
+                    button.classList.remove("loading-btn");
+                    button.innerHTML = "Pay Now";
+                });
 
-</script>
+            }, 2000);
+        }
+    </script>
 
 </body>
+
 </html>

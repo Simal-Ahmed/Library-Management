@@ -1,328 +1,220 @@
 <!DOCTYPE html>
-<html lang="en">
+<html>
+
 <head>
-    <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0">
-
-    <title>Library Management System</title>
-
+    <title>Library Dashboard</title>
     <link rel="stylesheet" href="{{ url_for('static', filename='style.css') }}">
-
-    <style>
-
-        *{
-            margin:0;
-            padding:0;
-            box-sizing:border-box;
-            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
-        }
-
-        body{
-            background:
-            radial-gradient(circle at top left, #1e293b 0%, transparent 35%),
-            radial-gradient(circle at bottom right, #0f172a 0%, transparent 30%),
-            linear-gradient(135deg, #020617, #0f172a, #111827);
-
-            min-height:100vh;
-            color:white;
-            overflow-x:hidden;
-        }
-
-        /* NAVBAR */
-
-        .navbar{
-            width:100%;
-            padding:18px 8%;
-            display:flex;
-            justify-content:space-between;
-            align-items:center;
-
-            background:rgba(255,255,255,0.05);
-            backdrop-filter: blur(12px);
-
-            border-bottom:1px solid rgba(255,255,255,0.08);
-
-            position:sticky;
-            top:0;
-            z-index:100;
-        }
-
-        .logo{
-            font-size:28px;
-            font-weight:700;
-            letter-spacing:1px;
-
-            background:linear-gradient(to right,#38bdf8,#818cf8);
-            -webkit-background-clip:text;
-            -webkit-text-fill-color:transparent;
-        }
-
-        .nav-links{
-            display:flex;
-            gap:30px;
-        }
-
-        .nav-links a{
-            text-decoration:none;
-            color:#e2e8f0;
-            font-size:15px;
-            transition:0.3s ease;
-            position:relative;
-        }
-
-        .nav-links a::after{
-            content:'';
-            position:absolute;
-            left:0;
-            bottom:-6px;
-            width:0%;
-            height:2px;
-            background:#38bdf8;
-            transition:0.3s;
-        }
-
-        .nav-links a:hover{
-            color:#38bdf8;
-        }
-
-        .nav-links a:hover::after{
-            width:100%;
-        }
-
-        /* CONTAINER */
-
-        .container{
-            width:90%;
-            max-width:1300px;
-            margin:auto;
-            padding:60px 0;
-        }
-
-        /* HERO */
-
-        .hero{
-            text-align:center;
-            margin-bottom:60px;
-        }
-
-        .hero h1{
-            font-size:58px;
-            line-height:1.2;
-            margin-bottom:20px;
-
-            background:linear-gradient(to right,#ffffff,#93c5fd);
-            -webkit-background-clip:text;
-            -webkit-text-fill-color:transparent;
-        }
-
-        .hero p{
-            color:#94a3b8;
-            font-size:18px;
-        }
-
-        /* CARDS */
-
-        .card-grid{
-            display:grid;
-            grid-template-columns:repeat(auto-fit,minmax(260px,1fr));
-            gap:28px;
-        }
-
-        .card{
-            background:rgba(255,255,255,0.06);
-            border:1px solid rgba(255,255,255,0.08);
-
-            padding:32px;
-            border-radius:24px;
-
-            backdrop-filter: blur(15px);
-
-            transition:0.35s ease;
-
-            position:relative;
-            overflow:hidden;
-        }
-
-        .card::before{
-            content:'';
-            position:absolute;
-            width:180px;
-            height:180px;
-            background:rgba(56,189,248,0.12);
-            border-radius:50%;
-
-            top:-80px;
-            right:-80px;
-        }
-
-        .card:hover{
-            transform:translateY(-10px) scale(1.02);
-            border-color:rgba(56,189,248,0.4);
-
-            box-shadow:
-            0 20px 40px rgba(0,0,0,0.4),
-            0 0 25px rgba(56,189,248,0.15);
-        }
-
-        .card h2{
-            font-size:26px;
-            margin-bottom:18px;
-            color:#f8fafc;
-            position:relative;
-            z-index:2;
-        }
-
-        .card p{
-            color:#cbd5e1;
-            line-height:1.7;
-            font-size:15px;
-            margin-bottom:28px;
-            position:relative;
-            z-index:2;
-        }
-
-        /* BUTTON */
-
-        .btn{
-            display:inline-block;
-            padding:13px 28px;
-
-            background:linear-gradient(to right,#0ea5e9,#6366f1);
-
-            color:white;
-            text-decoration:none;
-            font-weight:600;
-
-            border-radius:12px;
-
-            transition:0.3s ease;
-
-            position:relative;
-            z-index:2;
-        }
-
-        .btn:hover{
-            transform:scale(1.05);
-
-            box-shadow:
-            0 10px 20px rgba(14,165,233,0.3);
-        }
-
-        /* FOOTER */
-
-        .footer{
-            text-align:center;
-            padding:25px;
-
-            color:#94a3b8;
-            font-size:14px;
-
-            border-top:1px solid rgba(255,255,255,0.08);
-
-            background:rgba(255,255,255,0.03);
-            margin-top:40px;
-        }
-
-        /* RESPONSIVE */
-
-        @media(max-width:900px){
-
-            .navbar{
-                flex-direction:column;
-                gap:18px;
-            }
-
-            .nav-links{
-                flex-wrap:wrap;
-                justify-content:center;
-                gap:18px;
-            }
-
-            .hero h1{
-                font-size:40px;
-            }
-
-        }
-
-        @media(max-width:500px){
-
-            .hero h1{
-                font-size:32px;
-            }
-
-            .card{
-                padding:24px;
-            }
-
-        }
-
-    </style>
-
 </head>
 
 <body>
 
-    <div class="navbar">
+    {% include 'navbar.html' %}
 
-        <div class="logo">LibraryMS</div>
+    <main class="container">
 
-        <div class="nav-links">
-            <a href="/">Home</a>
-            <a href="/add_book">Add Book</a>
-            <a href="/add_member">Members</a>
-            <a href="/issue_book">Issue</a>
-            <a href="/return_book">Return</a>
-            <a href="/view_fines">Fines</a>
-        </div>
-
-    </div>
-
-    <div class="container">
-
-        <div class="hero">
-            <h1>Smart Library Management System</h1>
-            <p>Modern • Fast • Organized • Efficient</p>
-        </div>
-
-        <div class="card-grid">
-
-            <div class="card">
-                <h2>Add Book</h2>
-                <p>Add books with author, stock, and category information into the library database.</p>
-                <a href="/add_book" class="btn">Open</a>
+        <section class="hero dashboard-hero">
+            <div>
+                <p class="eyebrow">DBMS Mini Project</p>
+                <h1>Library Management System</h1>
+                <p>
+                    Manage books, members, borrow records, fines, and reports from one clean dashboard.
+                </p>
             </div>
 
-            <div class="card">
-                <h2>Add Member</h2>
-                <p>Register students and library members with secure record management.</p>
-                <a href="/add_member" class="btn">Open</a>
+            <!-- <div class="hero-panel">
+                <span>Backend</span>
+                <strong>Flask + MySQL</strong>
+                <small>Frontend connected with database operations</small>
+            </div> -->
+        </section>
+
+        <section class="stats-grid">
+
+            <div class="stat-card">
+                <span class="stat-label">Book Titles</span>
+                <h2>{{ total_books }}</h2>
+                <p>Total unique book records</p>
             </div>
 
-            <div class="card">
-                <h2>Issue Book</h2>
-                <p>Issue books instantly and automatically update the availability status.</p>
-                <a href="/issue_book" class="btn">Open</a>
+            <div class="stat-card">
+                <span class="stat-label">Available Copies</span>
+                <h2>{{ available_books }}</h2>
+                <p>Copies currently in library</p>
             </div>
 
-            <div class="card">
-                <h2>Return Book</h2>
-                <p>Manage book returns, due dates, and fine calculations efficiently.</p>
-                <a href="/return_book" class="btn">Open</a>
+            <div class="stat-card">
+                <span class="stat-label">Members</span>
+                <h2>{{ total_members }}</h2>
+                <p>Registered library users</p>
             </div>
 
-            <div class="card">
-                <h2>View Fines</h2>
-                <p>Track pending fines, payment status, and overdue book details.</p>
-                <a href="/view_fines" class="btn">Open</a>
+            <div class="stat-card">
+                <span class="stat-label">Issued</span>
+                <h2>{{ issued_books }}</h2>
+                <p>Books currently borrowed</p>
             </div>
 
-        </div>
+            <div class="stat-card">
+                <span class="stat-label">Returned</span>
+                <h2>{{ returned_books }}</h2>
+                <p>Completed borrow records</p>
+            </div>
 
-    </div>
+            <div class="stat-card warning-card">
+                <span class="stat-label">Pending Fine</span>
+                <h2>₹{{ pending_fines }}</h2>
+                <p>Amount yet to be paid</p>
+            </div>
 
-    <div class="footer">
-        DBMS Mini Project • 2026
-    </div>
+            <div class="stat-card success-card">
+                <span class="stat-label">Fine Collected</span>
+                <h2>₹{{ fine_collected }}</h2>
+                <p>Total paid fine amount</p>
+            </div>
+
+        </section>
+
+        <section class="section-head">
+            <!-- <div>
+                <p class="eyebrow">Actions</p>
+                <h2>Quick Access</h2>
+                <p>Use these options to perform common library operations.</p>
+            </div> -->
+        </section>
+
+        <section class="dashboard-section">
+            <div class="section-head">
+                <div>
+                    <p class="eyebrow">Daily Work</p>
+                    <h2>Library Operations</h2>
+                    <p>Use these options for regular book issue, return, and tracking work.</p>
+                </div>
+            </div>
+
+            <div class="action-grid">
+
+                <a href="/view_books" class="action-card">
+                    <div class="action-icon">LB</div>
+                    <div>
+                        <h3>View Books</h3>
+                        <p>Check all books and availability status.</p>
+                    </div>
+                </a>
+
+                <a href="/issue_book" class="action-card">
+                    <div class="action-icon">IS</div>
+                    <div>
+                        <h3>Issue Book</h3>
+                        <p>Issue available books and reduce quantity.</p>
+                    </div>
+                </a>
+
+                <a href="/return_book" class="action-card">
+                    <div class="action-icon">RT</div>
+                    <div>
+                        <h3>Return Book</h3>
+                        <p>Return books and calculate late fines.</p>
+                    </div>
+                </a>
+
+                <a href="/borrow_records" class="action-card">
+                    <div class="action-icon">BR</div>
+                    <div>
+                        <h3>Borrow Records</h3>
+                        <p>Track issued, returned, and overdue books.</p>
+                    </div>
+                </a>
+
+            </div>
+        </section>
+
+
+        <section class="dashboard-section">
+            <div class="section-head">
+                <div>
+                    <p class="eyebrow">People & Payments</p>
+                    <h2>Members and Fines</h2>
+                    <p>Manage library members, pending fines, paid fines, and activity reports.</p>
+                </div>
+            </div>
+
+            <div class="action-grid">
+
+                <a href="/view_members" class="action-card">
+                    <div class="action-icon">VM</div>
+                    <div>
+                        <h3>View Members</h3>
+                        <p>View registered members and delete safely.</p>
+                    </div>
+                </a>
+
+                <a href="/add_member" class="action-card">
+                    <div class="action-icon">MB</div>
+                    <div>
+                        <h3>Add Member</h3>
+                        <p>Register a new library member.</p>
+                    </div>
+                </a>
+
+                <a href="/view_fines" class="action-card">
+                    <div class="action-icon">FN</div>
+                    <div>
+                        <h3>View Fines</h3>
+                        <p>Check pending fines and payment status.</p>
+                    </div>
+                </a>
+
+                <a href="/reports" class="action-card">
+                    <div class="action-icon">RP</div>
+                    <div>
+                        <h3>Reports</h3>
+                        <p>Generate complete library activity report.</p>
+                    </div>
+                </a>
+
+            </div>
+        </section>
+
+
+        <section class="dashboard-section">
+            <div class="section-head">
+                <div>
+                    <p class="eyebrow">Setup</p>
+                    <h2>Library Setup</h2>
+                    <p>Add books, authors, and categories required for managing the library inventory.</p>
+                </div>
+            </div>
+
+            <div class="action-grid setup-grid">
+
+                <a href="/add_book" class="action-card">
+                    <div class="action-icon">BK</div>
+                    <div>
+                        <h3>Add Book</h3>
+                        <p>Add books with author, category, and quantity.</p>
+                    </div>
+                </a>
+
+                <a href="/add_author" class="action-card">
+                    <div class="action-icon">AU</div>
+                    <div>
+                        <h3>Add Author</h3>
+                        <p>Add authors for book records.</p>
+                    </div>
+                </a>
+
+                <a href="/add_category" class="action-card">
+                    <div class="action-icon">CT</div>
+                    <div>
+                        <h3>Add Category</h3>
+                        <p>Create categories to organize books.</p>
+                    </div>
+                </a>
+
+            </div>
+        </section>
+    </main>
 
 </body>
+
 </html>

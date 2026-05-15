@@ -1,5 +1,6 @@
 <!DOCTYPE html>
 <html>
+
 <head>
     <title>Add Member</title>
     <link rel="stylesheet" href="{{ url_for('static', filename='style.css') }}">
@@ -7,27 +8,90 @@
 
 <body>
 
-    <div class="navbar">
-        <div class="logo">LibraryMS</div>
-    </div>
+    {% include 'navbar.html' %}
 
-    <div class="form-box">
+    <main class="container">
 
-        <h1>Add Member</h1>
+        <section class="hero">
+            <p class="eyebrow">Member Registration</p>
+            <h1>Add Member</h1>
+            <p>
+                Register a new library member so books can be issued and tracked properly.
+            </p>
+        </section>
 
-        <form method="POST">
+        {% if message %}
+            <section class="message {{ message_type }}">
+                {{ message }}
+            </section>
+        {% endif %}
 
-            <input type="text" name="name" placeholder="Enter Name" required>
+        <section class="form-layout">
 
-            <input type="email" name="email" placeholder="Enter Email" required>
+            <div class="form-card">
 
-            <input type="text" name="phone" placeholder="Enter Phone Number" required>
+                <div class="form-heading">
+                    <h2>Member Details</h2>
+                    <p>Enter the member information below to add them to the library system.</p>
+                </div>
 
-            <button class="btn" type="submit">Add Member</button>
+                <form method="POST">
 
-        </form>
+                    <label>Member Name</label>
+                    <input
+                        type="text"
+                        name="name"
+                        placeholder="Example: Simal Ahmed"
+                        required
+                    >
 
-    </div>
+                    <label>Email Address</label>
+                    <input
+                        type="email"
+                        name="email"
+                        placeholder="Example: simal@example.com"
+                        required
+                    >
+
+                    <label>Phone Number</label>
+                    <input
+                        type="tel"
+                        name="phone"
+                        placeholder="Example: 9876543210"
+                        pattern="[0-9]{10}"
+                        required
+                    >
+
+                    <p class="field-hint">
+                        Phone number should contain exactly 10 digits.
+                    </p>
+
+                    <button type="submit" class="btn full-btn">Add Member</button>
+
+                </form>
+
+            </div>
+
+            <aside class="info-card">
+                <h3>Member Rules</h3>
+
+                <ul>
+                    <li>Each member gets a unique member ID.</li>
+                    <li>Members can borrow available books.</li>
+                    <li>Borrow and return history is stored in records.</li>
+                    <li>A member can be deleted only when database rules allow it.</li>
+                </ul>
+
+                <div class="side-actions">
+                    <a href="/view_members" class="side-link">View Members</a>
+                    <a href="/issue_book" class="side-link">Issue Book</a>
+                </div>
+            </aside>
+
+        </section>
+
+    </main>
 
 </body>
+
 </html>

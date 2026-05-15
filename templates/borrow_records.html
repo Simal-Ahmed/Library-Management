@@ -1,0 +1,138 @@
+<!DOCTYPE html>
+<html>
+
+<head>
+    <title>Borrow Records</title>
+    <link rel="stylesheet" href="{{ url_for('static', filename='style.css') }}">
+</head>
+
+<body>
+
+    {% include 'navbar.html' %}
+
+    <main class="container">
+
+        <section class="hero">
+            <p class="eyebrow">Borrow Tracking</p>
+            <h1>Borrow Records</h1>
+            <p>
+                Track issued books, returned books, expected return dates, actual return dates, and overdue status.
+            </p>
+        </section>
+
+        <section class="note-box">
+            <strong>Loan Rule:</strong> A book should be returned within 7 days.
+            If it is still issued after the expected return date, it will be marked as overdue.
+        </section>
+
+        {% if records|length == 0 %}
+
+            <section class="empty-box">
+                <h2>No Borrow Records Found</h2>
+                <p>
+                    Issued and returned book records will appear here after books are borrowed.
+                </p>
+                <a href="/issue_book" class="btn empty-action">Issue Book</a>
+            </section>
+
+        {% else %}
+
+            <section class="toolbar">
+                <div>
+                    <h2>Borrow History</h2>
+                    <p>Search records by member, book, issue date, return date, or status.</p>
+                </div>
+
+                <div class="toolbar-actions">
+                    <input
+                        type="text"
+                        id="searchInput"
+                        placeholder="Search borrow records..."
+                        oninput="filterTable()"
+                    >
+                    <a href="/return_book" class="btn">Return Book</a>
+                </div>
+            </section>
+
+            <section class="table-box">
+
+                <table id="dataTable">
+                    <thead>
+                        <tr>
+                            <th>Issue ID</th>
+                            <th>Member</th>
+                            <th>Book</th>
+                            <th>Issue Date</th>
+                            <th>Expected Return</th>
+                            <th>Actual Return</th>
+                            <th>Status</th>
+                            <th>Overdue</th>
+                        </tr>
+                    </thead>
+
+                    <tbody>
+                        {% for record in records %}
+
+                        <tr class="{% if record[7] == 'overdue' %}overdue-row{% endif %}">
+                            <td>#{{ record[0] }}</td>
+                            <td class="strong-cell">{{ record[1] }}</td>
+                            <td>{{ record[2] }}</td>
+                            <td>{{ record[3] }}</td>
+                            <td>{{ record[4] }}</td>
+
+                            <td>
+                                {% if record[5] %}
+                                    {{ record[5] }}
+                                {% else %}
+                                    <span class="muted-text">Not Returned</span>
+                                {% endif %}
+                            </td>
+
+                            <td>
+                                {% if record[6] == 'issued' %}
+                                    <span class="status-pill info-pill">Issued</span>
+                                {% else %}
+                                    <span class="status-pill success-pill">Returned</span>
+                                {% endif %}
+                            </td>
+
+                            <td>
+                                {% if record[7] == 'overdue' %}
+                                    <span class="status-pill danger-pill">Overdue</span>
+                                {% else %}
+                                    <span class="muted-text">—</span>
+                                {% endif %}
+                            </td>
+                        </tr>
+
+                        {% endfor %}
+                    </tbody>
+                </table>
+
+            </section>
+
+        {% endif %}
+
+    </main>
+
+    <script>
+        function filterTable() {
+            let input = document.getElementById("searchInput").value.toLowerCase();
+            let table = document.getElementById("dataTable");
+            let rows = table.getElementsByTagName("tr");
+
+            for (let i = 1; i < rows.length; i++) {
+                let rowText = rows[i].innerText.toLowerCase();
+
+                if (rowText.includes(input)) {
+                    rows[i].style.display = "";
+                } else {
+                    rows[i].style.display = "none";
+                }
+            }
+        }
+    </script>
+
+</body>
+
+</html>

@@ -1,0 +1,76 @@
+<!DOCTYPE html>
+<html>
+
+<head>
+    <title>Add Category</title>
+    <link rel="stylesheet" href="{{ url_for('static', filename='style.css') }}">
+</head>
+
+<body>
+
+    {% include 'navbar.html' %}
+
+    <main class="container">
+
+        <section class="hero">
+            <p class="eyebrow">Category Setup</p>
+            <h1>Add Category</h1>
+            <p>
+                Add book categories so books can be organized and searched more clearly.
+            </p>
+        </section>
+
+        {% if message %}
+            <section class="message {{ message_type }}">
+                {{ message }}
+            </section>
+        {% endif %}
+
+        <section class="form-layout">
+
+            <div class="form-card">
+
+                <div class="form-heading">
+                    <h2>Category Details</h2>
+                    <p>Enter the category name below to store it in the categories table.</p>
+                </div>
+
+                <form method="POST">
+
+                    <label>Category Name</label>
+                    <input
+                        type="text"
+                        name="category_name"
+                        placeholder="Example: Computer Science"
+                        required
+                    >
+
+                    <button type="submit" class="btn full-btn">Add Category</button>
+
+                </form>
+
+            </div>
+
+            <aside class="info-card">
+                <h3>Why Categories?</h3>
+
+                <ul>
+                    <li>Categories help organize books by subject or type.</li>
+                    <li>Books are connected to categories using category ID.</li>
+                    <li>This makes searching and reporting easier.</li>
+                    <li>One category can contain many books.</li>
+                </ul>
+
+                <div class="side-actions">
+                    <a href="/add_book" class="side-link">Add Book</a>
+                    <a href="/view_books" class="side-link">View Books</a>
+                </div>
+            </aside>
+
+        </section>
+
+    </main>
+
+</body>
+
+</html>

@@ -1,0 +1,76 @@
+<!DOCTYPE html>
+<html>
+
+<head>
+    <title>Add Author</title>
+    <link rel="stylesheet" href="{{ url_for('static', filename='style.css') }}">
+</head>
+
+<body>
+
+    {% include 'navbar.html' %}
+
+    <main class="container">
+
+        <section class="hero">
+            <p class="eyebrow">Author Setup</p>
+            <h1>Add Author</h1>
+            <p>
+                Add author names so they can be selected while creating new book records.
+            </p>
+        </section>
+
+        {% if message %}
+            <section class="message {{ message_type }}">
+                {{ message }}
+            </section>
+        {% endif %}
+
+        <section class="form-layout">
+
+            <div class="form-card">
+
+                <div class="form-heading">
+                    <h2>Author Details</h2>
+                    <p>Enter the author name below to store it in the authors table.</p>
+                </div>
+
+                <form method="POST">
+
+                    <label>Author Name</label>
+                    <input
+                        type="text"
+                        name="author_name"
+                        placeholder="Example: R. K. Narayan"
+                        required
+                    >
+
+                    <button type="submit" class="btn full-btn">Add Author</button>
+
+                </form>
+
+            </div>
+
+            <aside class="info-card">
+                <h3>Why Authors?</h3>
+
+                <ul>
+                    <li>Authors are stored separately to avoid repeated names.</li>
+                    <li>Books are connected to authors using author ID.</li>
+                    <li>This makes the database more organized.</li>
+                    <li>One author can be linked with many books.</li>
+                </ul>
+
+                <div class="side-actions">
+                    <a href="/add_book" class="side-link">Add Book</a>
+                    <a href="/view_books" class="side-link">View Books</a>
+                </div>
+            </aside>
+
+        </section>
+
+    </main>
+
+</body>
+
+</html>
